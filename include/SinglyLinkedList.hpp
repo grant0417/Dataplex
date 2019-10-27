@@ -20,6 +20,14 @@ namespace Dataplex
         SinglyLinkedList();
         ~SinglyLinkedList();
 
+        class Iterator;
+
+        Iterator begin();
+        const Iterator begin() const;
+
+        Iterator end();
+        const Iterator end() const;
+
         T& head();
         const T& head() const;
 
@@ -42,6 +50,28 @@ namespace Dataplex
 
             Node* next;
             T data;
+        };
+
+        class Iterator
+        {
+        public:
+            Iterator();
+            explicit Iterator(Node* node);
+
+            T* operator->();
+            T const* operator->() const;
+
+            T& operator*();
+            const T& operator*() const;
+
+            Iterator& operator++();
+            Iterator operator++(int);
+
+            bool operator==(const Iterator& iterator) const;
+            bool operator!=(const Iterator& iterator) const;
+
+        private:
+            Node* node;
         };
 
         Node* _head;
@@ -75,6 +105,30 @@ Dataplex::SinglyLinkedList<T>::~SinglyLinkedList()
 
     _head = nullptr;
     _tail = nullptr;
+}
+
+template<typename T>
+typename Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::begin()
+{
+    return Iterator(_head);
+}
+
+template<typename T>
+typename const Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::begin() const
+{
+    return Iterator(_head);
+}
+
+template<typename T>
+typename Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::end()
+{
+    return Iterator(nullptr);
+}
+
+template<typename T>
+typename const Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::end() const
+{
+    return Iterator(nullptr);
 }
 
 template<typename T>
@@ -177,7 +231,7 @@ void Dataplex::SinglyLinkedList<T>::pop_back()
 template<typename T>
 void Dataplex::SinglyLinkedList<T>::insert(const T& t, std::size_t pos)
 {
-    if (pos < 0 || pos > _size)
+    if (pos > _size)
     {
         return;
     }
@@ -205,9 +259,9 @@ void Dataplex::SinglyLinkedList<T>::insert(const T& t, std::size_t pos)
 template<typename T>
 void Dataplex::SinglyLinkedList<T>::erase(std::size_t pos)
 {
-    if (pos < 0 || pos >= _size)
+    if (pos >= _size)
     {
-        return;
+        throw std::out_of_range("Position to remove outside of existing range!");
     }
     else if (pos == _size - 1)
     {
@@ -218,16 +272,14 @@ void Dataplex::SinglyLinkedList<T>::erase(std::size_t pos)
         Node* curr = _head;
         Node* prev = nullptr;
 
-        for (std::size_t i = 0; i <= pos; ++i)
+        for (std::size_t i = 1; i < pos; ++i)
         {
             prev = curr;
             curr = curr->next;
         }
 
-        Node* next = curr->next;
+        prev->next = curr->next;
         delete curr;
-
-        prev->next = next;
 
         --_size;
     }
@@ -250,4 +302,72 @@ Dataplex::SinglyLinkedList<T>::Node::Node(const T& data) :
     next(nullptr),
     data(data)
 {
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>::Iterator::Iterator() :
+    node(_head)
+{
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>::Iterator::Iterator(Node* node) :
+    node(node)
+{
+}
+
+template<typename T>
+T* Dataplex::SinglyLinkedList<T>::Iterator::operator->()
+{
+    return &node->data;
+}
+
+template<typename T>
+T const* Dataplex::SinglyLinkedList<T>::Iterator::operator->() const
+{
+    return &node->data;
+}
+
+template<typename T>
+T& Dataplex::SinglyLinkedList<T>::Iterator::operator*()
+{
+    return node->data;
+}
+
+template<typename T>
+const T& Dataplex::SinglyLinkedList<T>::Iterator::operator*() const
+{
+    return node->data;
+}
+
+template<typename T>
+typename Dataplex::SinglyLinkedList<T>::Iterator& Dataplex::SinglyLinkedList<T>::Iterator::operator++()
+{
+    if (node)
+    {
+        node = node->next;
+    }
+
+    return *this;
+}
+
+template<typename T>
+typename Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::Iterator::operator++(int)
+{
+    Iterator iterator = *this;
+    ++*this;
+
+    return iterator;
+}
+
+template<typename T>
+bool Dataplex::SinglyLinkedList<T>::Iterator::operator!=(const Iterator& iterator) const
+{
+    return node != iterator.node;
+}
+
+template<typename T>
+bool Dataplex::SinglyLinkedList<T>::Iterator::operator==(const Iterator& iterator) const
+{
+    return node == iterator.node;
 }
