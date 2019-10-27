@@ -7,7 +7,6 @@ http://inversepalindrome.com
 
 #pragma once
 
-#include <memory>
 #include <cstddef>
 
 
@@ -18,6 +17,13 @@ namespace Dataplex
     {
     public:
         DoublyLinkedList();
+        ~DoublyLinkedList();
+
+        T& head();
+        const T& head() const;
+
+        T& tail();
+        const T& tail() const;
 
         void push_back(const T& t);
         void pop_back();
@@ -34,12 +40,12 @@ namespace Dataplex
             explicit Node(const T& data);
 
             T data;
-            std::unique_ptr<Node> next;
-            std::unique_ptr<Node> prev;
+            Node* next;
+            Node* prev;
         };
 
-        std::unique_ptr<Node> head;
-        std::unique_ptr<Node> tail;
+        Node* _head;
+        Node* _tail;
 
         std::size_t _size;
     };
@@ -47,14 +53,66 @@ namespace Dataplex
 
 template<typename T>
 Dataplex::DoublyLinkedList<T>::DoublyLinkedList() :
+    _head(nullptr),
+    _tail(nullptr),
     size(0)
 {
 }
 
 template<typename T>
+Dataplex::DoublyLinkedList<T>::~DoublyLinkedList()
+{
+
+}
+
+template<typename T>
+T& Dataplex::DoublyLinkedList<T>::head()
+{
+    if (!head)
+    {
+        throw std::out_of_range("Head not initialized!");
+    }
+
+    return _head->data;
+}
+
+template<typename T>
+const T& Dataplex::DoublyLinkedList<T>::head() const
+{
+    if (!head)
+    {
+        throw std::out_of_range("Head not initialized!");
+    }
+
+    return _head->data;
+}
+
+template<typename T>
+T& Dataplex::DoublyLinkedList<T>::tail()
+{
+    if (!tail)
+    {
+        throw std::out_of_range("Tail not initialized!");
+    }
+
+    return _tail->data;
+}
+
+template<typename T>
+const T& Dataplex::DoublyLinkedList<T>::tail() const
+{
+    if (!tail)
+    {
+        throw std::out_of_range("Tail not initialized!");
+    }
+
+    return _tail->data;
+}
+
+template<typename T>
 void Dataplex::DoublyLinkedList<T>::push_back(const T& t)
 {
-    auto node = std::make_unique<Node>(t);
+    auto node = new Node(T);
 
     
 }
@@ -91,6 +149,8 @@ bool Dataplex::DoublyLinkedList<T>::is_empty() const
 
 template<typename T>
 Dataplex::DoublyLinkedList<T>::Node::Node(const T& data) :
-    data(data)
+    data(data),
+    next(nullptr),
+    prev(nullptr)
 {
 }

@@ -7,8 +7,8 @@ http://inversepalindrome.com
 
 #pragma once
 
-#include <memory>
 #include <cstddef>
+#include <exception>
 
 
 namespace Dataplex
@@ -18,6 +18,13 @@ namespace Dataplex
     {
     public:
         SinglyLinkedList();
+        ~SinglyLinkedList();
+
+        T& head();
+        const T& head() const;
+
+        T& tail();
+        const T& tail() const;
 
         void push_back(const T& t);
         void pop_back();
@@ -33,12 +40,12 @@ namespace Dataplex
         {
             explicit Node(const T& data);
 
-            std::unique_ptr<Node> next;
+            Node* next;
             T data;
         };
 
-        std::unique_ptr<Node> head;
-        std::unique_ptr<Node> tail;
+        Node* _head;
+        Node* _tail;
 
         std::size_t _size;
     };
@@ -46,55 +53,184 @@ namespace Dataplex
 
 template<typename T>
 Dataplex::SinglyLinkedList<T>::SinglyLinkedList() :
-    size(0)
+    _head(nullptr),
+    _tail(nullptr),
+    _size(0)
 {
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>::~SinglyLinkedList()
+{
+    Node* curr = _head;
+
+    while (curr != nullptr)
+    {
+        Node* next = curr->next;
+
+        delete curr;
+
+        curr = next;
+    }
+
+    _head = nullptr;
+    _tail = nullptr;
+}
+
+template<typename T>
+T& Dataplex::SinglyLinkedList<T>::head()
+{
+    if (!head)
+    {
+        throw std::out_of_range("Head not initialized!");
+    }
+
+    return _head->data;
+}
+
+template<typename T>
+const T& Dataplex::SinglyLinkedList<T>::head() const
+{
+    if (!head)
+    {
+        throw std::out_of_range("Head not initialized!");
+    }
+
+    return _head->data;
+}
+
+template<typename T>
+T& Dataplex::SinglyLinkedList<T>::tail()
+{
+    if (!tail)
+    {
+        throw std::out_of_range("Tail not initialized!");
+    }
+
+    return _tail->data;
+}
+
+template<typename T>
+const T& Dataplex::SinglyLinkedList<T>::tail() const
+{
+    if (!tail)
+    {
+        throw std::out_of_range("Tail not initialized!");
+    }
+
+    return _tail->data;
 }
 
 template<typename T>
 void Dataplex::SinglyLinkedList<T>::push_back(const T& t)
 {
-    auto node = std::make_unique<Node>(t);
+    Node* node = new Node(t);
 
-    if (head)
+    if (!_head)
     {
-        tail->next = std::move(node);
-        tail = tail->next;
+        _head = node;
+        _tail = _head;
     }
     else
     {
-        head = std::move(node);
-        tail = std::move(head);
+        _tail->next = node;
+        _tail = node; 
     }
+
+    ++_size;
 }
 
 template <typename T>
 void Dataplex::SinglyLinkedList<T>::pop_back()
 {
-    if (!head)
+    if (!_head)
     {
         return;
     }
-    else if (head == tail)
+    else if (_head == _tail)
     {
-        head = nullptr;
-        tail = nullptr;
+        delete _head;
+
+        _head = nullptr;
+        _tail = nullptr;
     }
     else
     {
+        Node* curr = _head;
+        Node* prev = nullptr;
 
+        while (curr->next != nullptr)
+        {
+            prev = curr;
+            curr = curr->next;
+        }
+
+        _tail = prev;
+        prev->next = nullptr;
+
+        delete curr;
     }
+
+    --_size;
 }
 
 template<typename T>
 void Dataplex::SinglyLinkedList<T>::insert(const T& t, std::size_t pos)
 {
+    if (pos < 0 || pos > _size)
+    {
+        return;
+    }
+    else if (pos == _size)
+    {
+        push_back(t);
+    }
+    else
+    {
+        Node* curr = _head;
 
+        for (std::size_t i = 0; i <= pos; ++i)
+        {
+            curr = curr->next;
+        }
+
+        Node* node = new Node(t);
+        node->next = curr;
+        curr = node;
+
+        ++_size;
+    }
 }
 
 template<typename T>
 void Dataplex::SinglyLinkedList<T>::erase(std::size_t pos)
 {
+    if (pos < 0 || pos >= _size)
+    {
+        return;
+    }
+    else if (pos == _size - 1)
+    {
+        pop_back();
+    }
+    else
+    {
+        Node* curr = _head;
+        Node* prev = nullptr;
 
+        for (std::size_t i = 0; i <= pos; ++i)
+        {
+            prev = curr;
+            curr = curr->next;
+        }
+
+        Node* next = curr->next;
+        delete curr;
+
+        prev->next = next;
+
+        --_size;
+    }
 }
 
 template<typename T>
@@ -111,6 +247,7 @@ bool Dataplex::SinglyLinkedList<T>::is_empty() const
 
 template<typename T>
 Dataplex::SinglyLinkedList<T>::Node::Node(const T& data) :
+    next(nullptr),
     data(data)
 {
 }
