@@ -270,9 +270,9 @@ void Dataplex::SinglyLinkedList<T>::pop_back()
         prev->next = nullptr;
 
         delete curr;
+        
+        --_size;
     }
-
-    --_size;
 }
 
 template<typename T>
