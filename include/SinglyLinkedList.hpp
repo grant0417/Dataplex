@@ -18,8 +18,11 @@ namespace Dataplex
     {
     public:
         SinglyLinkedList();
-        SinglyLinkedList(const SinglyLinkedList&) = delete;
-        SinglyLinkedList& operator=(const SinglyLinkedList&) = delete;
+        SinglyLinkedList(const SinglyLinkedList<T>& list);
+        SinglyLinkedList& operator=(const SinglyLinkedList<T>& list);
+        SinglyLinkedList(SinglyLinkedList<T>&& list);
+        SinglyLinkedList& operator=(SinglyLinkedList<T>&& list);
+        SinglyLinkedList(std::initializer_list<T> list);
 
         ~SinglyLinkedList();
 
@@ -97,6 +100,40 @@ Dataplex::SinglyLinkedList<T>::SinglyLinkedList() :
     _tail(nullptr),
     _size(0)
 {
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>::SinglyLinkedList(const Dataplex::SinglyLinkedList<T>& list)
+{
+
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(const Dataplex::SinglyLinkedList<T>& list)
+{
+
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>::SinglyLinkedList(Dataplex::SinglyLinkedList<T>&& list)
+{
+
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(SinglyLinkedList&& list)
+{
+
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>::SinglyLinkedList(std::initializer_list<T> list) :
+    SinglyLinkedList()
+{
+    for (const auto& data : list)
+    {
+        push_back(data);
+    }
 }
 
 template<typename T>
@@ -270,7 +307,7 @@ void Dataplex::SinglyLinkedList<T>::pop_back()
         prev->next = nullptr;
 
         delete curr;
-        
+
         --_size;
     }
 }
@@ -362,6 +399,8 @@ void Dataplex::SinglyLinkedList<T>::clear()
 
     _head = nullptr;
     _tail = nullptr;
+
+    _size = 0;
 }
 
 template<typename T>
