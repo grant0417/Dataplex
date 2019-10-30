@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2019 Inverse Palindrome
-Dataplex - UnorderedHashMap.hpp
+Dataplex - OrderedMap.hpp
 http://inversepalindrome.com
 */
 
@@ -11,7 +11,7 @@ http://inversepalindrome.com
 namespace Dataplex
 {
     template<typename Key, typename Value>
-    class UnorderedHashMap
+    class OrderedMap
     {
     public:
     private:

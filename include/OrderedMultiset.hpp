@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2019 Inverse Palindrome
-Dataplex - OrderedHashMap.hpp
+Dataplex - OrderedMultiset.hpp
 http://inversepalindrome.com
 */
 
@@ -10,10 +10,9 @@ http://inversepalindrome.com
 
 namespace Dataplex
 {
-    template<typename Key, typename Value>
-    class OrderedHashMap
+    template<typename T>
+    class OrderedMultiset
     {
-    public:
-    private:
+
     };
 }

@@ -107,7 +107,8 @@ Dataplex::DoublyLinkedList<T>::DoublyLinkedList() :
 }
 
 template<typename T>
-Dataplex::DoublyLinkedList<T>::DoublyLinkedList(const Dataplex::DoublyLinkedList<T>& list)
+Dataplex::DoublyLinkedList<T>::DoublyLinkedList(const Dataplex::DoublyLinkedList<T>& list) :
+    DoublyLinkedList()
 {
 
 }
@@ -119,7 +120,8 @@ Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(const Da
 }
 
 template<typename T>
-Dataplex::DoublyLinkedList<T>::DoublyLinkedList(Dataplex::DoublyLinkedList<T>&& list)
+Dataplex::DoublyLinkedList<T>::DoublyLinkedList(Dataplex::DoublyLinkedList<T>&& list) :
+    DoublyLinkedList()
 {
 
 }
@@ -217,7 +219,21 @@ const T& Dataplex::DoublyLinkedList<T>::tail() const
 template<typename T>
 void Dataplex::DoublyLinkedList<T>::push_front(const T& t)
 {
-    
+    auto node = new Node(T);
+
+    if (!_head)
+    {
+        _head = node;
+        _tail = _head;
+    }
+    else
+    {
+        node->next = head;
+        head->prev = node;
+        head = node;
+    }
+
+    ++_size;
 }
 
 template<typename T>
@@ -225,31 +241,109 @@ void Dataplex::DoublyLinkedList<T>::push_back(const T& t)
 {
     auto node = new Node(T);
 
-    
+    if (!_head)
+    {
+        _head = node;
+        _tail = _head;
+    }
+    else
+    {
+        _tail->next = node;
+        node->prev = _tail;
+        _tail = node;
+    }
+
+    ++_size;
 }
 
 template<typename T>
 void Dataplex::DoublyLinkedList<T>::pop_front()
 {
+    if (!_head)
+    {
+        throw std::out_of_range("No existing elements to remove!");
+    }
+    else if (_head == _tail)
+    {
+        delete _head;
 
+        _head = nullptr;
+        _tail = nullptr;
+
+        --_size;
+    }
+    else
+    {
+        --_size;
+    }
 }
 
 template <typename T>
 void Dataplex::DoublyLinkedList<T>::pop_back()
 {
-    
+    if (!_head)
+    {
+        throw std::out_of_range("No existing elements to remove!");
+    }
+    else if (_head == _tail)
+    {
+        delete head;
+
+        _head = nullptr;
+        _tail = nullptr;
+
+        --_size;
+    }
+    else
+    {
+        --_size;
+    }
 }
 
 template<typename T>
 void Dataplex::DoublyLinkedList<T>::insert(const T& t, std::size_t pos)
 {
+    if (pos > _size)
+    {
+        throw std::out_of_range("Position to insert outside of existing range!");
+    }
+    else if (pos == 0)
+    {
+        push_front(t);
+    }
+    else if (pos == _size)
+    {
+        push_back(t);
+    }
+    else
+    {
 
+    }
 }
 
 template<typename T>
 void Dataplex::DoublyLinkedList<T>::erase(std::size_t pos)
 {
+    if (!_head)
+    {
+        throw std::out_of_range("No existing elements to remove!");
+    }
+    else if (pos >= _size)
+    {
+        throw std::out_of_range("Position to remove outside of existing range!");
+    }
+    else if (pos == 0)
+    {
+        pop_front();
+    }
+    else if (pos == _size - 1)
+    {
+        pop_back();
+    }
+    else
+    {
 
+    }
 }
 
 template<typename T>

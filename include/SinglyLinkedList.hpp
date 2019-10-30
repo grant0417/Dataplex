@@ -103,27 +103,46 @@ Dataplex::SinglyLinkedList<T>::SinglyLinkedList() :
 }
 
 template<typename T>
-Dataplex::SinglyLinkedList<T>::SinglyLinkedList(const Dataplex::SinglyLinkedList<T>& list)
+Dataplex::SinglyLinkedList<T>::SinglyLinkedList(const Dataplex::SinglyLinkedList<T>& list) :
+    SinglyLinkedList()
 {
+    auto node = list._head;
 
+    while (node != nullptr)
+    {
+        push_back(node->data);
+        node = node->next;
+    }
 }
 
 template<typename T>
 Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(const Dataplex::SinglyLinkedList<T>& list)
 {
+    Dataplex::SinglyLinkedList<T> temp(list);
+    std::swap(_head, temp._head);
+    std::swap(_tail, temp._tail);
+    std::swap(_size, temp._size);
 
+    return *this;
 }
 
 template<typename T>
-Dataplex::SinglyLinkedList<T>::SinglyLinkedList(Dataplex::SinglyLinkedList<T>&& list)
+Dataplex::SinglyLinkedList<T>::SinglyLinkedList(Dataplex::SinglyLinkedList<T>&& list) :
+    SinglyLinkedList()
 {
-
+    std::swap(_head, list._head);
+    std::swap(_tail, list._tail);
+    std::swap(_size, list._size);
 }
 
 template<typename T>
 Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(SinglyLinkedList&& list)
 {
+    std::swap(_head, list.head);
+    std::swap(_tail, list._tail);
+    std::swap(_size, list._size);
 
+    return *this;
 }
 
 template<typename T>
