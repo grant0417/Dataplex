@@ -138,7 +138,7 @@ Dataplex::SinglyLinkedList<T>::SinglyLinkedList(Dataplex::SinglyLinkedList<T>&& 
 template<typename T>
 Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(SinglyLinkedList&& list)
 {
-    std::swap(_head, list.head);
+    std::swap(_head, list._head);
     std::swap(_tail, list._tail);
     std::swap(_size, list._size);
 

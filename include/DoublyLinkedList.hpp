@@ -151,7 +151,7 @@ Dataplex::DoublyLinkedList<T>::DoublyLinkedList(Dataplex::DoublyLinkedList<T>&& 
 template<typename T>
 Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(DoublyLinkedList&& list)
 {
-    std::swap(_head, list.head);
+    std::swap(_head, list._head);
     std::swap(_tail, list._tail);
     std::swap(_size, list._size);
 
@@ -324,6 +324,12 @@ void Dataplex::DoublyLinkedList<T>::pop_front()
     }
     else
     {
+        Node* curr = _head;
+        _head = curr->next;
+        _head->prev = nullptr;
+
+        delete curr;
+
         --_size;
     }
 }
@@ -346,6 +352,12 @@ void Dataplex::DoublyLinkedList<T>::pop_back()
     }
     else
     {
+        Node* curr = _tail;
+        _tail = _tail->prev;
+        _tail->next = nullptr;
+
+        delete curr;
+
         --_size;
     }
 }
@@ -369,7 +381,7 @@ void Dataplex::DoublyLinkedList<T>::insert(const T& data, std::size_t pos)
     {
         Node* curr = _head;
 
-        for (int i = 1; i < pos; ++i)
+        for (std::size_t i = 1; i < pos; ++i)
         {
             curr = curr->next;
         }
@@ -405,15 +417,15 @@ void Dataplex::DoublyLinkedList<T>::erase(std::size_t pos)
     }
     else
     {
-        Node* curr = _head;
+        Node* curr = _head->next;
 
-        for (int i = 1; i < pos; ++i)
+        for (std::size_t i = 1; i < pos; ++i)
         {
             curr = curr->next;
         }
 
-        curr->next->prev = curr->prev;
         curr->prev->next = curr->next;
+        curr->next->prev = curr->prev;
 
         delete curr;
 
