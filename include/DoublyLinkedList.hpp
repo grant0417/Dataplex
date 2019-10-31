@@ -8,6 +8,7 @@ http://inversepalindrome.com
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 #include <exception>
 
 
@@ -28,11 +29,19 @@ namespace Dataplex
 
         class Iterator;
 
+        using ReverseIterator = std::reverse_iterator<Iterator>;
+
         Iterator begin();
         const Iterator begin() const;
 
         Iterator end();
         const Iterator end() const;
+
+        ReverseIterator rbegin();
+        const ReverseIterator rbegin() const;
+
+        ReverseIterator rend();
+        const ReverseIterator rend() const;
 
         T& head();
         const T& head() const;
@@ -40,13 +49,13 @@ namespace Dataplex
         T& tail();
         const T& tail() const;
 
-        void push_front(const T& t);
-        void push_back(const T& t);
+        void push_front(const T& data);
+        void push_back(const T& data);
 
         void pop_front();
         void pop_back();
 
-        void insert(const T& t, std::size_t pos);
+        void insert(const T& data, std::size_t pos);
         void erase(std::size_t pos);
 
         void clear();
@@ -110,26 +119,43 @@ template<typename T>
 Dataplex::DoublyLinkedList<T>::DoublyLinkedList(const Dataplex::DoublyLinkedList<T>& list) :
     DoublyLinkedList()
 {
+    auto node = list._head;
 
+    while (node != nullptr)
+    {
+        push_back(node->data);
+        node = node->next;
+    }
 }
 
 template<typename T>
 Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(const Dataplex::DoublyLinkedList<T>& list)
 {
+    Dataplex::SinglyLinkedList<T> temp(list);
+    std::swap(_head, temp._head);
+    std::swap(_tail, temp._tail);
+    std::swap(_size, temp._size);
 
+    return *this;
 }
 
 template<typename T>
 Dataplex::DoublyLinkedList<T>::DoublyLinkedList(Dataplex::DoublyLinkedList<T>&& list) :
     DoublyLinkedList()
 {
-
+    std::swap(_head, list._head);
+    std::swap(_tail, list._tail);
+    std::swap(_size, list._size);
 }
 
 template<typename T>
 Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(DoublyLinkedList&& list)
 {
+    std::swap(_head, list.head);
+    std::swap(_tail, list._tail);
+    std::swap(_size, list._size);
 
+    return *this;
 }
 
 template<typename T>
@@ -173,9 +199,33 @@ typename const Dataplex::DoublyLinkedList<T>::Iterator Dataplex::DoublyLinkedLis
 }
 
 template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::rbegin()
+{
+    return ReverseIterator(_tail);
+}
+
+template<typename T>
+typename const Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::rbegin() const
+{
+    return Iterator(_tail);
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::rend()
+{
+    return ReverseIterator(nullptr);
+}
+
+template<typename T>
+typename const Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::rend() const
+{
+    return ReverseIterator(nullptr);
+}
+
+template<typename T>
 T& Dataplex::DoublyLinkedList<T>::head()
 {
-    if (!head)
+    if (!_head)
     {
         throw std::out_of_range("Head not initialized!");
     }
@@ -186,7 +236,7 @@ T& Dataplex::DoublyLinkedList<T>::head()
 template<typename T>
 const T& Dataplex::DoublyLinkedList<T>::head() const
 {
-    if (!head)
+    if (!_head)
     {
         throw std::out_of_range("Head not initialized!");
     }
@@ -197,7 +247,7 @@ const T& Dataplex::DoublyLinkedList<T>::head() const
 template<typename T>
 T& Dataplex::DoublyLinkedList<T>::tail()
 {
-    if (!tail)
+    if (!_tail)
     {
         throw std::out_of_range("Tail not initialized!");
     }
@@ -208,7 +258,7 @@ T& Dataplex::DoublyLinkedList<T>::tail()
 template<typename T>
 const T& Dataplex::DoublyLinkedList<T>::tail() const
 {
-    if (!tail)
+    if (!_tail)
     {
         throw std::out_of_range("Tail not initialized!");
     }
@@ -217,9 +267,9 @@ const T& Dataplex::DoublyLinkedList<T>::tail() const
 }
 
 template<typename T>
-void Dataplex::DoublyLinkedList<T>::push_front(const T& t)
+void Dataplex::DoublyLinkedList<T>::push_front(const T& data)
 {
-    auto node = new Node(T);
+    auto node = new Node(data);
 
     if (!_head)
     {
@@ -228,18 +278,18 @@ void Dataplex::DoublyLinkedList<T>::push_front(const T& t)
     }
     else
     {
-        node->next = head;
-        head->prev = node;
-        head = node;
+        node->next = _head;
+        _head->prev = node;
+        _head = node;
     }
 
     ++_size;
 }
 
 template<typename T>
-void Dataplex::DoublyLinkedList<T>::push_back(const T& t)
+void Dataplex::DoublyLinkedList<T>::push_back(const T& data)
 {
-    auto node = new Node(T);
+    auto node = new Node(data);
 
     if (!_head)
     {
@@ -287,7 +337,7 @@ void Dataplex::DoublyLinkedList<T>::pop_back()
     }
     else if (_head == _tail)
     {
-        delete head;
+        delete _head;
 
         _head = nullptr;
         _tail = nullptr;
@@ -301,7 +351,7 @@ void Dataplex::DoublyLinkedList<T>::pop_back()
 }
 
 template<typename T>
-void Dataplex::DoublyLinkedList<T>::insert(const T& t, std::size_t pos)
+void Dataplex::DoublyLinkedList<T>::insert(const T& data, std::size_t pos)
 {
     if (pos > _size)
     {
@@ -309,15 +359,28 @@ void Dataplex::DoublyLinkedList<T>::insert(const T& t, std::size_t pos)
     }
     else if (pos == 0)
     {
-        push_front(t);
+        push_front(data);
     }
     else if (pos == _size)
     {
-        push_back(t);
+        push_back(data);
     }
     else
     {
+        Node* curr = _head;
 
+        for (int i = 1; i < pos; ++i)
+        {
+            curr = curr->next;
+        }
+
+        Node* node = new Node(data);
+        node->next = curr->next;
+        node->prev = curr;
+        curr->next = node;
+        curr->next->prev = node;
+
+        ++_size;
     }
 }
 
@@ -342,13 +405,39 @@ void Dataplex::DoublyLinkedList<T>::erase(std::size_t pos)
     }
     else
     {
+        Node* curr = _head;
 
+        for (int i = 1; i < pos; ++i)
+        {
+            curr = curr->next;
+        }
+
+        curr->next->prev = curr->prev;
+        curr->prev->next = curr->next;
+
+        delete curr;
+
+        --_size;
     }
 }
 
 template<typename T>
 void Dataplex::DoublyLinkedList<T>::clear()
 {
+    Node* curr = _head;
+
+    while (curr != nullptr)
+    {
+        Node* next = curr->next;
+
+        delete curr;
+
+        curr = next;
+    }
+
+    _head = nullptr;
+    _tail = nullptr;
+
     _size = 0;
 }
 

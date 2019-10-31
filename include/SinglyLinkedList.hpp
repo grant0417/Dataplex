@@ -40,13 +40,13 @@ namespace Dataplex
         T& tail();
         const T& tail() const;
 
-        void push_front(const T& t);
-        void push_back(const T& t);
+        void push_front(const T& data);
+        void push_back(const T& data);
 
         void pop_front();
         void pop_back();
 
-        void insert(const T& t, std::size_t pos);
+        void insert(const T& data, std::size_t pos);
         void erase(std::size_t pos);
 
         void clear();
@@ -230,9 +230,9 @@ const T& Dataplex::SinglyLinkedList<T>::tail() const
 }
 
 template<typename T>
-void Dataplex::SinglyLinkedList<T>::push_front(const T& t)
+void Dataplex::SinglyLinkedList<T>::push_front(const T& data)
 {
-    Node* node = new Node(t);
+    Node* node = new Node(data);
 
     if (!_head)
     {
@@ -249,9 +249,9 @@ void Dataplex::SinglyLinkedList<T>::push_front(const T& t)
 }
 
 template<typename T>
-void Dataplex::SinglyLinkedList<T>::push_back(const T& t)
+void Dataplex::SinglyLinkedList<T>::push_back(const T& data)
 {
-    Node* node = new Node(t);
+    Node* node = new Node(data);
 
     if (!_head)
     {
@@ -270,7 +270,7 @@ void Dataplex::SinglyLinkedList<T>::push_back(const T& t)
 template<typename T>
 void Dataplex::SinglyLinkedList<T>::pop_front()
 {
-    if (!head)
+    if (!_head)
     {
         throw std::out_of_range("No existing elements to remove!");
 
@@ -332,7 +332,7 @@ void Dataplex::SinglyLinkedList<T>::pop_back()
 }
 
 template<typename T>
-void Dataplex::SinglyLinkedList<T>::insert(const T& t, std::size_t pos)
+void Dataplex::SinglyLinkedList<T>::insert(const T& data, std::size_t pos)
 {
     if (pos > _size)
     {
@@ -340,11 +340,11 @@ void Dataplex::SinglyLinkedList<T>::insert(const T& t, std::size_t pos)
     }
     else if (pos == 0)
     {
-        push_front(t);
+        push_front(data);
     }
     else if (pos == _size)
     {
-        push_back(t);
+        push_back(data);
     }
     else
     {
@@ -357,7 +357,7 @@ void Dataplex::SinglyLinkedList<T>::insert(const T& t, std::size_t pos)
             curr = curr->next;
         }
 
-        Node* node = new Node(t);
+        Node* node = new Node(data);
         prev->next = node;
         node->next = curr;
 
