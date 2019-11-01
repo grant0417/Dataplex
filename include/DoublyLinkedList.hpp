@@ -30,7 +30,8 @@ namespace Dataplex
         class Iterator;
         class ConstIterator;
 
-        using ReverseIterator = std::reverse_iterator<Iterator>;
+        class ReverseIterator;
+        class ConstReverseIterator;
 
         Iterator begin();
         ConstIterator begin() const;
@@ -39,10 +40,10 @@ namespace Dataplex
         ConstIterator end() const;
 
         ReverseIterator rbegin();
-        const ReverseIterator rbegin() const;
+        ConstReverseIterator rbegin() const;
 
         ReverseIterator rend();
-        const ReverseIterator rend() const;
+        ConstReverseIterator rend() const;
 
         T& head();
         const T& head() const;
@@ -127,6 +128,64 @@ namespace Dataplex
 
             bool operator==(const ConstIterator& iterator) const;
             bool operator!=(const ConstIterator& iterator) const;
+
+        private:
+            Node* _node;
+        };
+
+        class ReverseIterator
+        {
+            using value_type = T;
+            using difference_type = std::ptrdiff_t;
+            using pointer = T*;
+            using reference = T&;
+            using iterator_category = std::bidirectional_iterator_tag;
+            
+        public:
+            explicit ReverseIterator(Node* node);
+
+            ReverseIterator& operator=(Node* node);
+
+            T& operator*();
+            T* operator->();
+
+            ReverseIterator& operator++();
+            ReverseIterator operator++(int);
+
+            ReverseIterator& operator--();
+            ReverseIterator operator--(int);
+
+            bool operator==(const ReverseIterator& iterator) const;
+            bool operator!=(const ReverseIterator& iterator) const;
+
+        private:
+            Node* _node;
+        };
+
+        class ConstReverseIterator
+        {
+            using value_type = T;
+            using difference_type = std::ptrdiff_t;
+            using pointer = T*;
+            using reference = T&;
+            using iterator_category = std::bidirectional_iterator_tag;
+
+        public:
+            explicit ConstReverseIterator(Node* node);
+
+            ConstReverseIterator& operator=(Node* node);
+
+            const T& operator*() const;
+            const T* operator->() const;
+
+            ConstReverseIterator& operator++();
+            ConstReverseIterator operator++(int);
+
+            ConstReverseIterator& operator--();
+            ConstReverseIterator operator--(int);
+
+            bool operator==(const ConstReverseIterator& iterator) const;
+            bool operator!=(const ConstReverseIterator& iterator) const;
 
         private:
             Node* _node;
@@ -237,9 +296,9 @@ typename Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedLi
 }
 
 template<typename T>
-typename const Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::rbegin() const
+typename Dataplex::DoublyLinkedList<T>::ConstReverseIterator Dataplex::DoublyLinkedList<T>::rbegin() const
 {
-    return Iterator(_tail);
+    return ConstReverseIterator(_tail);
 }
 
 template<typename T>
@@ -249,9 +308,9 @@ typename Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedLi
 }
 
 template<typename T>
-typename const Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::rend() const
+typename Dataplex::DoublyLinkedList<T>::ConstReverseIterator Dataplex::DoublyLinkedList<T>::rend() const
 {
-    return ReverseIterator(nullptr);
+    return ConstReverseIterator(nullptr);
 }
 
 template<typename T>
@@ -544,7 +603,7 @@ typename Dataplex::DoublyLinkedList<T>::Iterator& Dataplex::DoublyLinkedList<T>:
 template<typename T>
 typename Dataplex::DoublyLinkedList<T>::Iterator Dataplex::DoublyLinkedList<T>::Iterator::operator++(int)
 {
-    Iterator iterator = *this;
+    auto iterator = *this;
     ++* this;
 
     return iterator;
@@ -564,7 +623,7 @@ typename Dataplex::DoublyLinkedList<T>::Iterator& Dataplex::DoublyLinkedList<T>:
 template<typename T>
 typename Dataplex::DoublyLinkedList<T>::Iterator Dataplex::DoublyLinkedList<T>::Iterator::operator--(int)
 {
-    Iterator iterator = *this;
+    auto iterator = *this;
     --*this;
 
     return iterator;
@@ -655,6 +714,160 @@ bool Dataplex::DoublyLinkedList<T>::ConstIterator::operator!=(const ConstIterato
 
 template<typename T>
 bool Dataplex::DoublyLinkedList<T>::ConstIterator::operator==(const ConstIterator& iterator) const
+{
+    return _node == iterator._node;
+}
+
+template<typename T>
+Dataplex::DoublyLinkedList<T>::ReverseIterator::ReverseIterator(Node* node) :
+    _node(node)
+{
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ReverseIterator& Dataplex::DoublyLinkedList<T>::ReverseIterator::operator=(Node* node)
+{
+    _node = node;
+    return *this;
+}
+
+template<typename T>
+T& Dataplex::DoublyLinkedList<T>::ReverseIterator::operator*()
+{
+    return _node->data;
+}
+
+template<typename T>
+T* Dataplex::DoublyLinkedList<T>::ReverseIterator::operator->()
+{
+    return &_node->data;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ReverseIterator& Dataplex::DoublyLinkedList<T>::ReverseIterator::operator++()
+{
+    if (_node)
+    {
+        _node = _node->prev;
+    }
+
+    return *this;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::ReverseIterator::operator++(int)
+{
+    auto iterator = *this;
+    ++* this;
+
+    return iterator;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ReverseIterator& Dataplex::DoublyLinkedList<T>::ReverseIterator::operator--()
+{
+    if (_node)
+    {
+        _node = _node->next;
+    }
+
+    return *this;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ReverseIterator Dataplex::DoublyLinkedList<T>::ReverseIterator::operator--(int)
+{
+    auto iterator = *this;
+    --* this;
+
+    return iterator;
+}
+
+template<typename T>
+bool Dataplex::DoublyLinkedList<T>::ReverseIterator::operator!=(const ReverseIterator& iterator) const
+{
+    return _node != iterator._node;
+}
+
+template<typename T>
+bool Dataplex::DoublyLinkedList<T>::ReverseIterator::operator==(const ReverseIterator& iterator) const
+{
+    return _node == iterator._node;
+}
+
+template<typename T>
+Dataplex::DoublyLinkedList<T>::ConstReverseIterator::ConstReverseIterator(Node* node) :
+    _node(node)
+{
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ConstReverseIterator& Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator=(Node* node)
+{
+    _node = node;
+    return *this;
+}
+
+template<typename T>
+const T& Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator*() const
+{
+    return _node->data;
+}
+
+template<typename T>
+const T* Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator->() const
+{
+    return &_node->data;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ConstReverseIterator& Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator++()
+{
+    if (_node)
+    {
+        _node = _node->prev;
+    }
+
+    return *this;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ConstReverseIterator Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator++(int)
+{
+    auto iterator = *this;
+    ++* this;
+
+    return iterator;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ConstReverseIterator& Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator--()
+{
+    if (_node)
+    {
+        _node = _node->next;
+    }
+
+    return *this;
+}
+
+template<typename T>
+typename Dataplex::DoublyLinkedList<T>::ConstReverseIterator Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator--(int)
+{
+    auto iterator = *this;
+    --* this;
+
+    return iterator;
+}
+
+template<typename T>
+bool Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator!=(const ConstReverseIterator& iterator) const
+{
+    return _node != iterator._node;
+}
+
+template<typename T>
+bool Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator==(const ConstReverseIterator& iterator) const
 {
     return _node == iterator._node;
 }
