@@ -8,6 +8,7 @@ http://inversepalindrome.com
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 #include <exception>
 
 
@@ -27,12 +28,13 @@ namespace Dataplex
         ~SinglyLinkedList();
 
         class Iterator;
+        class ConstIterator;
 
         Iterator begin();
-        const Iterator begin() const;
+        ConstIterator begin() const;
 
         Iterator end();
-        const Iterator end() const;
+        ConstIterator end() const;
 
         T& head();
         const T& head() const;
@@ -65,23 +67,51 @@ namespace Dataplex
 
         class Iterator
         {
+            using value_type = T;
+            using difference_type = std::ptrdiff_t;
+            using pointer = T*;
+            using reference = T&;
+            using iterator_category = std::forward_iterator_tag;
+
         public:
-            Iterator();
             explicit Iterator(Node* node);
 
             Iterator& operator=(Node* node);
 
-            T* operator->();
-            T const* operator->() const;
-
             T& operator*();
-            const T& operator*() const;
+            T* operator->();
 
             Iterator& operator++();
             Iterator operator++(int);
 
             bool operator==(const Iterator& iterator) const;
             bool operator!=(const Iterator& iterator) const;
+
+        private:
+            Node* _node;
+        };
+
+        class ConstIterator
+        {
+            using value_type = T;
+            using difference_type = std::ptrdiff_t;
+            using pointer = T*;
+            using reference = T&;
+            using iterator_category = std::forward_iterator_tag;
+
+        public:
+            explicit ConstIterator(Node* node);
+
+            ConstIterator& operator=(Node* node);
+
+            const T& operator*() const;
+            const T* operator->() const;
+
+            ConstIterator& operator++();
+            ConstIterator operator++(int);
+
+            bool operator==(const ConstIterator& iterator) const;
+            bool operator!=(const ConstIterator& iterator) const;
 
         private:
             Node* _node;
@@ -168,9 +198,9 @@ typename Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::
 }
 
 template<typename T>
-typename const Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::begin() const
+typename Dataplex::SinglyLinkedList<T>::ConstIterator Dataplex::SinglyLinkedList<T>::begin() const
 {
-    return Iterator(_head);
+    return ConstIterator(_head);
 }
 
 template<typename T>
@@ -180,9 +210,9 @@ typename Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::
 }
 
 template<typename T>
-typename const Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::end() const
+typename Dataplex::SinglyLinkedList<T>::ConstIterator Dataplex::SinglyLinkedList<T>::end() const
 {
-    return Iterator(nullptr);
+    return ConstIterator(nullptr);
 }
 
 template<typename T>
@@ -442,12 +472,6 @@ Dataplex::SinglyLinkedList<T>::Node::Node(const T& data) :
 }
 
 template<typename T>
-Dataplex::SinglyLinkedList<T>::Iterator::Iterator() :
-    _node(_head)
-{
-}
-
-template<typename T>
 Dataplex::SinglyLinkedList<T>::Iterator::Iterator(Node* node) :
     _node(node)
 {
@@ -461,27 +485,15 @@ typename Dataplex::SinglyLinkedList<T>::Iterator& Dataplex::SinglyLinkedList<T>:
 }
 
 template<typename T>
-T* Dataplex::SinglyLinkedList<T>::Iterator::operator->()
-{
-    return &_node->data;
-}
-
-template<typename T>
-T const* Dataplex::SinglyLinkedList<T>::Iterator::operator->() const
-{
-    return &_node->data;
-}
-
-template<typename T>
 T& Dataplex::SinglyLinkedList<T>::Iterator::operator*()
 {
     return _node->data;
 }
 
 template<typename T>
-const T& Dataplex::SinglyLinkedList<T>::Iterator::operator*() const
+T* Dataplex::SinglyLinkedList<T>::Iterator::operator->()
 {
-    return _node->data;
+    return &_node->data;
 }
 
 template<typename T>
@@ -498,7 +510,7 @@ typename Dataplex::SinglyLinkedList<T>::Iterator& Dataplex::SinglyLinkedList<T>:
 template<typename T>
 typename Dataplex::SinglyLinkedList<T>::Iterator Dataplex::SinglyLinkedList<T>::Iterator::operator++(int)
 {
-    Iterator iterator = *this;
+    auto iterator = *this;
     ++*this;
 
     return iterator;
@@ -512,6 +524,63 @@ bool Dataplex::SinglyLinkedList<T>::Iterator::operator!=(const Iterator& iterato
 
 template<typename T>
 bool Dataplex::SinglyLinkedList<T>::Iterator::operator==(const Iterator& iterator) const
+{
+    return _node == iterator._node;
+}
+
+template<typename T>
+Dataplex::SinglyLinkedList<T>::ConstIterator::ConstIterator(Node* node) :
+    _node(node)
+{
+}
+
+template<typename T>
+typename Dataplex::SinglyLinkedList<T>::ConstIterator& Dataplex::SinglyLinkedList<T>::ConstIterator::operator=(Node* node)
+{
+    _node = node;
+    return *this;
+}
+
+template<typename T>
+const T& Dataplex::SinglyLinkedList<T>::ConstIterator::operator*() const
+{
+    return _node->data;
+}
+
+template<typename T>
+const T* Dataplex::SinglyLinkedList<T>::ConstIterator::operator->() const
+{
+    return &_node->data;
+}
+
+template<typename T>
+typename Dataplex::SinglyLinkedList<T>::ConstIterator& Dataplex::SinglyLinkedList<T>::ConstIterator::operator++()
+{
+    if (_node)
+    {
+        _node = _node->next;
+    }
+
+    return *this;
+}
+
+template<typename T>
+typename Dataplex::SinglyLinkedList<T>::ConstIterator Dataplex::SinglyLinkedList<T>::ConstIterator::operator++(int)
+{
+    auto iterator = *this;
+    ++* this;
+
+    return iterator;
+}
+
+template<typename T>
+bool Dataplex::SinglyLinkedList<T>::ConstIterator::operator!=(const ConstIterator& iterator) const
+{
+    return _node != iterator._node;
+}
+
+template<typename T>
+bool Dataplex::SinglyLinkedList<T>::ConstIterator::operator==(const ConstIterator& iterator) const
 {
     return _node == iterator._node;
 }
