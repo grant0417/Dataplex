@@ -20,9 +20,9 @@ namespace Dataplex
     public:
         DoublyLinkedList();
         DoublyLinkedList(const DoublyLinkedList<T>& list);
-        DoublyLinkedList& operator=(const DoublyLinkedList<T>& list);
+        DoublyLinkedList<T>& operator=(const DoublyLinkedList<T>& list);
         DoublyLinkedList(DoublyLinkedList<T>&& list);
-        DoublyLinkedList& operator=(DoublyLinkedList<T>&& list);
+        DoublyLinkedList<T>& operator=(DoublyLinkedList<T>&& list);
         DoublyLinkedList(std::initializer_list<T> list);
 
         ~DoublyLinkedList();
@@ -207,7 +207,7 @@ Dataplex::DoublyLinkedList<T>::DoublyLinkedList() :
 }
 
 template<typename T>
-Dataplex::DoublyLinkedList<T>::DoublyLinkedList(const Dataplex::DoublyLinkedList<T>& list) :
+Dataplex::DoublyLinkedList<T>::DoublyLinkedList(const DoublyLinkedList<T>& list) :
     DoublyLinkedList()
 {
     auto node = list._head;
@@ -220,7 +220,7 @@ Dataplex::DoublyLinkedList<T>::DoublyLinkedList(const Dataplex::DoublyLinkedList
 }
 
 template<typename T>
-Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(const Dataplex::DoublyLinkedList<T>& list)
+Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(const DoublyLinkedList<T>& list)
 {
     Dataplex::SinglyLinkedList<T> temp(list);
     std::swap(_head, temp._head);
@@ -231,7 +231,7 @@ Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(const Da
 }
 
 template<typename T>
-Dataplex::DoublyLinkedList<T>::DoublyLinkedList(Dataplex::DoublyLinkedList<T>&& list) :
+Dataplex::DoublyLinkedList<T>::DoublyLinkedList(DoublyLinkedList<T>&& list) :
     DoublyLinkedList()
 {
     std::swap(_head, list._head);

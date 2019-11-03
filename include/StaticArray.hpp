@@ -14,16 +14,19 @@ http://inversepalindrome.com
 namespace Dataplex
 {
     template<typename T, std::size_t N>
-    class StaticArray
+    struct StaticArray
     {
-    public:
-        StaticArray();
-
         T* begin();
         const T* begin() const;
 
         T* end();
         const T* end() const;
+
+        std::reverse_iterator<T*> rbegin();
+        std::reverse_iterator<const T*> rbegin() const;
+
+        std::reverse_iterator<T*> rend();
+        std::reverse_iterator<const T*> rend() const;
 
         T& operator[](std::size_t index);
         const T& operator[](std::size_t index) const;
@@ -31,16 +34,8 @@ namespace Dataplex
         std::size_t size() const;
         bool is_empty() const;
 
-    private:
         T _array[N];
-        std::size_t _size;
     };
-}
-
-template<typename T, std::size_t N>
-Dataplex::StaticArray<T, N>::StaticArray() :
-    _size(N)
-{ 
 }
 
 template<typename T, std::size_t N>
@@ -68,9 +63,33 @@ const T* Dataplex::StaticArray<T, N>::end() const
 }
 
 template<typename T, std::size_t N>
+std::reverse_iterator<T*> Dataplex::StaticArray<T, N>::rbegin()
+{
+    return std::make_reverse_iterator<T*>(end());
+}
+
+template<typename T, std::size_t N>
+std::reverse_iterator<const T*> Dataplex::StaticArray<T, N>::rbegin() const
+{
+    return std::make_reverse_iterator<const T*>(end());
+}
+
+template<typename T, std::size_t N>
+std::reverse_iterator<T*> Dataplex::StaticArray<T, N>::rend()
+{
+    return std::make_reverse_iterator<T*>(begin());
+}
+
+template<typename T, std::size_t N>
+std::reverse_iterator<const T*> Dataplex::StaticArray<T, N>::rend() const
+{
+    return std::make_reverse_iterator<const T*>(begin());
+}
+
+template<typename T, std::size_t N>
 T& Dataplex::StaticArray<T, N>::operator[](std::size_t index)
 {
-    if (index >= _size)
+    if (index >= N)
     {
         throw std::out_of_range("Index position out of range!");
     }
@@ -81,7 +100,7 @@ T& Dataplex::StaticArray<T, N>::operator[](std::size_t index)
 template<typename T, std::size_t N>
 const T& Dataplex::StaticArray<T, N>::operator[](std::size_t index) const
 {
-    if (index >= _size)
+    if (index >= N)
     {
         throw std::out_of_range("Index position out of range!");
     }
@@ -92,11 +111,11 @@ const T& Dataplex::StaticArray<T, N>::operator[](std::size_t index) const
 template<typename T, std::size_t N>
 std::size_t Dataplex::StaticArray<T, N>::size() const
 {
-    return _size;
+    return N;
 }
 
 template<typename T, std::size_t N>
 bool Dataplex::StaticArray<T, N>::is_empty() const
 {
-    return _size == 0;
+    return N == 0;
 }

@@ -20,9 +20,9 @@ namespace Dataplex
     public:
         SinglyLinkedList();
         SinglyLinkedList(const SinglyLinkedList<T>& list);
-        SinglyLinkedList& operator=(const SinglyLinkedList<T>& list);
+        SinglyLinkedList<T>& operator=(const SinglyLinkedList<T>& list);
         SinglyLinkedList(SinglyLinkedList<T>&& list);
-        SinglyLinkedList& operator=(SinglyLinkedList<T>&& list);
+        SinglyLinkedList<T>& operator=(SinglyLinkedList<T>&& list);
         SinglyLinkedList(std::initializer_list<T> list);
 
         ~SinglyLinkedList();
@@ -133,7 +133,7 @@ Dataplex::SinglyLinkedList<T>::SinglyLinkedList() :
 }
 
 template<typename T>
-Dataplex::SinglyLinkedList<T>::SinglyLinkedList(const Dataplex::SinglyLinkedList<T>& list) :
+Dataplex::SinglyLinkedList<T>::SinglyLinkedList(const SinglyLinkedList<T>& list) :
     SinglyLinkedList()
 {
     auto node = list._head;
@@ -146,7 +146,7 @@ Dataplex::SinglyLinkedList<T>::SinglyLinkedList(const Dataplex::SinglyLinkedList
 }
 
 template<typename T>
-Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(const Dataplex::SinglyLinkedList<T>& list)
+Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(const SinglyLinkedList<T>& list)
 {
     Dataplex::SinglyLinkedList<T> temp(list);
     std::swap(_head, temp._head);
@@ -157,7 +157,7 @@ Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(const Da
 }
 
 template<typename T>
-Dataplex::SinglyLinkedList<T>::SinglyLinkedList(Dataplex::SinglyLinkedList<T>&& list) :
+Dataplex::SinglyLinkedList<T>::SinglyLinkedList(SinglyLinkedList<T>&& list) :
     SinglyLinkedList()
 {
     std::swap(_head, list._head);
@@ -166,7 +166,7 @@ Dataplex::SinglyLinkedList<T>::SinglyLinkedList(Dataplex::SinglyLinkedList<T>&& 
 }
 
 template<typename T>
-Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(SinglyLinkedList&& list)
+Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(SinglyLinkedList<T>&& list)
 {
     std::swap(_head, list._head);
     std::swap(_tail, list._tail);
