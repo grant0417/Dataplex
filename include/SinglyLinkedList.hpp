@@ -121,6 +121,8 @@ namespace Dataplex
         Node* _tail;
 
         std::size_t _size;
+
+        void swap(SinglyLinkedList<T>& list);
     };
 }
 
@@ -148,10 +150,8 @@ Dataplex::SinglyLinkedList<T>::SinglyLinkedList(const SinglyLinkedList<T>& list)
 template<typename T>
 Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(const SinglyLinkedList<T>& list)
 {
-    Dataplex::SinglyLinkedList<T> temp(list);
-    std::swap(_head, temp._head);
-    std::swap(_tail, temp._tail);
-    std::swap(_size, temp._size);
+    SinglyLinkedList<T> temp(list);
+    swap(temp);
 
     return *this;
 }
@@ -160,17 +160,13 @@ template<typename T>
 Dataplex::SinglyLinkedList<T>::SinglyLinkedList(SinglyLinkedList<T>&& list) :
     SinglyLinkedList()
 {
-    std::swap(_head, list._head);
-    std::swap(_tail, list._tail);
-    std::swap(_size, list._size);
-}
+    swap(list);
+} 
 
 template<typename T>
 Dataplex::SinglyLinkedList<T>& Dataplex::SinglyLinkedList<T>::operator=(SinglyLinkedList<T>&& list)
 {
-    std::swap(_head, list._head);
-    std::swap(_tail, list._tail);
-    std::swap(_size, list._size);
+    swap(list);
 
     return *this;
 }
@@ -583,4 +579,14 @@ template<typename T>
 bool Dataplex::SinglyLinkedList<T>::ConstIterator::operator==(const ConstIterator& iterator) const
 {
     return _node == iterator._node;
+}
+
+template<typename T>
+void Dataplex::SinglyLinkedList<T>::swap(SinglyLinkedList<T>& list)
+{
+    using std::swap;
+
+    swap(_head, list._head);
+    swap(_tail, list._tail);
+    swap(_size, list._size);
 }

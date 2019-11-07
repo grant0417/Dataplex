@@ -195,6 +195,8 @@ namespace Dataplex
         Node* _tail;
 
         std::size_t _size;
+
+        void swap(DoublyLinkedList<T>& list);
     };
 }
 
@@ -222,10 +224,8 @@ Dataplex::DoublyLinkedList<T>::DoublyLinkedList(const DoublyLinkedList<T>& list)
 template<typename T>
 Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(const DoublyLinkedList<T>& list)
 {
-    Dataplex::SinglyLinkedList<T> temp(list);
-    std::swap(_head, temp._head);
-    std::swap(_tail, temp._tail);
-    std::swap(_size, temp._size);
+    SinglyLinkedList<T> temp(list);
+    swap(temp);
 
     return *this;
 }
@@ -234,17 +234,13 @@ template<typename T>
 Dataplex::DoublyLinkedList<T>::DoublyLinkedList(DoublyLinkedList<T>&& list) :
     DoublyLinkedList()
 {
-    std::swap(_head, list._head);
-    std::swap(_tail, list._tail);
-    std::swap(_size, list._size);
+    swap(list);
 }
 
 template<typename T>
 Dataplex::DoublyLinkedList<T>& Dataplex::DoublyLinkedList<T>::operator=(DoublyLinkedList&& list)
 {
-    std::swap(_head, list._head);
-    std::swap(_tail, list._tail);
-    std::swap(_size, list._size);
+    swap(list);
 
     return *this;
 }
@@ -870,4 +866,14 @@ template<typename T>
 bool Dataplex::DoublyLinkedList<T>::ConstReverseIterator::operator==(const ConstReverseIterator& iterator) const
 {
     return _node == iterator._node;
+}
+
+template<typename T>
+void Dataplex::DoublyLinkedList<T>::swap(DoublyLinkedList<T>& list)
+{
+    using std::swap;
+
+    swap(_head, list._head);
+    swap(_tail, list._tail);
+    swap(_size, list._size);
 }
