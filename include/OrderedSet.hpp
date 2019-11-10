@@ -13,6 +13,7 @@ namespace Dataplex
     template<typename T>
     class OrderedSet
     {
+    public:
 
     };
 }

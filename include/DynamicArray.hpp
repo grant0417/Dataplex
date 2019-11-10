@@ -43,12 +43,16 @@ namespace Dataplex
         const T& operator[](std::size_t pos) const;
 
         void push_back(const T& data);
+        void push_back(T&& data);
+
         void pop_back();
 
         void insert(const T& data, std::size_t pos);
+        void insert(T&& data, std::size_t pos);
         void erase(std::size_t pos);
 
         void reserve(std::size_t capacity);
+        void shrink_to_fit();
         void clear();
 
         std::size_t size() const;
@@ -200,6 +204,17 @@ void Dataplex::DynamicArray<T>::push_back(const T& data)
     _array[_size++] = data;
 }
 
+template<typename T>
+void Dataplex::DynamicArray<T>::push_back(T&& data)
+{
+    if (_size == _capacity)
+    {
+        reserve(_capacity * 2);
+    }
+
+    _array[_size++] = std::move(data);
+}
+
 template <typename T>
 void Dataplex::DynamicArray<T>::pop_back()
 {
@@ -208,8 +223,7 @@ void Dataplex::DynamicArray<T>::pop_back()
         throw std::out_of_range("Can't pop back empty dynamic array!");
     }
 
-    --_size;
-    _array[_size].~T();
+    _array[_size--].~T();
 }
 
 template<typename T>
@@ -220,12 +234,30 @@ void Dataplex::DynamicArray<T>::insert(const T& data, std::size_t pos)
         reserve(_capacity * 2);
     }
 
-    for (std::size_t i = _size - 1; i > pos; --i)
+    for (std::size_t i = _size - 1; i >= pos; --i)
     {
         _array[i + 1] = _array[i];
     }
 
     _array[pos] = data;
+
+    ++_size;
+}
+
+template<typename T>
+void Dataplex::DynamicArray<T>::insert(T&& data, std::size_t pos)
+{
+    if (_size == _capacity)
+    {
+        reserve(_capacity * 2);
+    }
+
+    for (std::size_t i = _size - 1; i >= pos; --i)
+    {
+        _array[i + 1] = _array[i];
+    }
+
+    _array[pos] = std::move(data);
 
     ++_size;
 }
@@ -238,9 +270,11 @@ void Dataplex::DynamicArray<T>::erase(std::size_t pos)
         throw std::out_of_range("Erase position outside of existing range!");
     }
 
+    _array[pos].~T();
+
     for (std::size_t i = pos; i < _size; ++i)
     {
-        _array[pos] = _array[pos + 1];
+        _array[i] = _array[i + 1];
     }
 
     --_size;
@@ -261,6 +295,13 @@ void Dataplex::DynamicArray<T>::reserve(std::size_t capacity)
     delete[] _array;
 
     _array = newArray;
+}
+
+template<typename T>
+void Dataplex::DynamicArray<T>::shrink_to_fit()
+{
+    _capacity = _size;
+    reserve(_capacity);
 }
 
 template<typename T>
